@@ -337,6 +337,7 @@ function Room() {
             borderRadius: "10px",
             margin: "5px",
             width: "50vw",
+            backgroundColor: "rgb(30,30,30)",
           }}
         >
           <TabContext value={activeFile ? activeFile.fileName : ""}>
