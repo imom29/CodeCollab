@@ -2,6 +2,9 @@ import { Routes, Route, useNavigate, useParams } from "react-router-dom";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import MonacoEditor from "@monaco-editor/react";
+import axios from 'axios'
+import ChatbotPanel from "./Chatbot/ChatBot";
+import { Clipboard, FilePlus2 } from "lucide-react";
 
 // Page for creating or entering a room
 function Home() {
@@ -34,6 +37,22 @@ function Room() {
   const [files, setFiles] = useState<FileObject[]>([]);
   const [activeFile, setActiveFile] = useState<FileObject | null>(null);
   const [language, setLanguage] = useState<string>("");
+  const [chatInput, setChatInput] = useState("");
+
+
+  const sendMessageToAI = async () => {
+    if (!chatInput.trim() || !activeFile) return;
+    const response = await axios.post(`${SERVER_URL}/suggest`, {
+      code: activeFile.code,
+      question: chatInput,
+      language: activeFile.language,
+    })
+
+    const data = await response.data
+    console.log(data)
+    setChatInput("");
+  };
+
   // Initiate socket, join room, and handle code syncing
   useEffect(() => {
     if (!roomId) return;
@@ -125,10 +144,19 @@ function Room() {
   
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div style={{ background: "#222", color: "#fff", padding: 12 }}>
-        Room: <b>{roomId}</b>
+      <div style={{ background: "#222", color: "#fff", padding: 12 }} className="flex justify-between">
+        <span>
+          Room: <b>{roomId}</b>
+          </span>
         <span style={{ marginLeft: 20, fontSize: 14 }}>
-          Share this link to collaborate: {window.location.href}
+          Share this link to collaborate: {window.location.href} 
+          <button
+          className="px-1 text-xs text-zinc-300 hover:text-white cursor-pointer"
+          onClick={() => navigator.clipboard.writeText(window.location.href)}
+          title="Copy room link"
+        >
+          <Clipboard className="w-4 h-4" />
+        </button>
         </span>
         {language}
       </div>
@@ -136,19 +164,21 @@ function Room() {
       <div style={{ display: "flex", height: "100vh" }}>
       {/* Sidebar */}
       <div style={{ width: "200px", background: "#1e1e1e", color: "white", padding: "10px" }}>
-        <h3>Files</h3>
+        
 
       {/* New File Button */}
       <button
         style={{
           width: "100%",
           padding: "8px",
-          backgroundColor: "#4CAF50",
+          backgroundColor: "#0899dd",
           color: "white",
           border: "none",
           borderRadius: "4px",
           marginBottom: "10px",
           cursor: "pointer",
+          display: "flex",
+          gap: "5px"
         }}
         onClick={() => {
           const fileName = prompt("Enter new file name (e.g., newFile.js)");
@@ -157,9 +187,10 @@ function Room() {
           socketRef.current?.emit("create-file", { roomId, fileName });
         }}
       >
-        + New File
+        <FilePlus2 /> Add File
       </button>
 
+      <h3>Files</h3>
         {files.map((file) => (
           <div
             key={file.fileName}
@@ -187,8 +218,14 @@ function Room() {
           </>
         )}
       </div>
+      <div className="w-[30%]">
+      <ChatbotPanel code={activeFile?.code || ""} language={activeFile?.language || ""} />
+      </div>
+
     </div>
 
+
+    
     </div>
   );
 }
