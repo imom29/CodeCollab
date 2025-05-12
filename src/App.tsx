@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import MonacoEditor from "@monaco-editor/react";
 import { CircularProgress, Tab } from "@mui/material";
-import axios from "axios";
 import {
   DEFAULT_CODE,
   findExtension,
@@ -13,6 +12,9 @@ import {
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
+import axios from "axios";
+import ChatbotPanel from "./Chatbot/ChatBot";
+import { Clipboard, FilePlus2 } from "lucide-react";
 
 // Page for creating or entering a room
 function Home() {
@@ -47,6 +49,22 @@ function Room() {
   const [language, setLanguage] = useState<string>("");
   const [output, setOutput] = useState<string | undefined>();
   const [codeExecuting, setCodeExecuting] = useState<boolean>(false); // Initiate socket, join room, and handle code syncing
+  const [chatInput, setChatInput] = useState("");
+
+  const sendMessageToAI = async () => {
+    if (!chatInput.trim() || !activeFile) return;
+    const response = await axios.post(`${SERVER_URL}/suggest`, {
+      code: activeFile.code,
+      question: chatInput,
+      language: activeFile.language,
+    });
+
+    const data = await response.data;
+    console.log(data);
+    setChatInput("");
+  };
+
+  // Initiate socket, join room, and handle code syncing
   useEffect(() => {
     if (!roomId) return;
     // Connect
@@ -196,10 +214,22 @@ function Room() {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div style={{ background: "#222", color: "#fff", padding: 12 }}>
-        Room: <b>{roomId}</b>
+      <div
+        style={{ background: "#222", color: "#fff", padding: 12 }}
+        className="flex justify-between"
+      >
+        <span>
+          Room: <b>{roomId}</b>
+        </span>
         <span style={{ marginLeft: 20, fontSize: 14 }}>
           Share this link to collaborate: {window.location.href}
+          <button
+            className="px-1 text-xs text-zinc-300 hover:text-white cursor-pointer"
+            onClick={() => navigator.clipboard.writeText(window.location.href)}
+            title="Copy room link"
+          >
+            <Clipboard className="w-4 h-4" />
+          </button>
         </span>
         {language}
       </div>
@@ -214,6 +244,7 @@ function Room() {
             padding: "10px",
             borderRadius: "10px",
             margin: "5px",
+            flex: 0.5,
           }}
         >
           <h3>Files</h3>
@@ -305,6 +336,7 @@ function Room() {
             flex: 2,
             borderRadius: "10px",
             margin: "5px",
+            width: "50vw",
           }}
         >
           <TabContext value={activeFile ? activeFile.fileName : ""}>
@@ -371,11 +403,17 @@ function Room() {
             </TabPanel>
           </TabContext>
         </div>
+        <div style={{ flex: 1 }}>
+          <ChatbotPanel
+            code={activeFile?.code || ""}
+            language={activeFile?.language || ""}
+          />
+        </div>
       </div>
       <div>
         <div
           style={{
-            height: "30vh",
+            height: "25vh",
             background: "#1e1e1e",
             borderRadius: "10px",
             margin: "5px",
