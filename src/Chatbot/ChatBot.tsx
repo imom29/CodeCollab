@@ -54,7 +54,7 @@ export default function ChatbotPanel(activeFile: ChatBotProps) {
   );
 
   return (
-    <div className="relative flex flex-col h-full bg-zinc-900/70 border-l border-zinc-800 text-white">
+    <div className="relative flex flex-col h-full bg-zinc-900/70 border-l border-zinc-800 text-white bg-brand-blue">
       <div
       className="absolute inset-0 z-0"
       style={{

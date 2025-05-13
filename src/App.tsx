@@ -14,7 +14,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import axios from "axios";
 import ChatbotPanel from "./Chatbot/ChatBot";
-import { Clipboard, FilePlus2 } from "lucide-react";
+import { FilePlus2 } from "lucide-react";
+import Header from "./components/Header"
 
 // Page for creating or entering a room
 function Home() {
@@ -35,11 +36,7 @@ function Home() {
 }
 
 const SERVER_URL = "http://localhost:4000";
-interface FileObject {
-  fileName: string;
-  code: string;
-  language: string;
-}
+
 function Room() {
   const { roomId } = useParams();
   const socketRef = useRef<Socket>();
@@ -49,20 +46,6 @@ function Room() {
   const [language, setLanguage] = useState<string>("");
   const [output, setOutput] = useState<string | undefined>();
   const [codeExecuting, setCodeExecuting] = useState<boolean>(false); // Initiate socket, join room, and handle code syncing
-  const [chatInput, setChatInput] = useState("");
-
-  const sendMessageToAI = async () => {
-    if (!chatInput.trim() || !activeFile) return;
-    const response = await axios.post(`${SERVER_URL}/suggest`, {
-      code: activeFile.code,
-      question: chatInput,
-      language: activeFile.language,
-    });
-
-    const data = await response.data;
-    console.log(data);
-    setChatInput("");
-  };
 
   // Initiate socket, join room, and handle code syncing
   useEffect(() => {
@@ -213,27 +196,8 @@ function Room() {
   };
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <div
-        style={{ background: "#222", color: "#fff", padding: 12 }}
-        className="flex justify-between"
-      >
-        <span>
-          Room: <b>{roomId}</b>
-        </span>
-        <span style={{ marginLeft: 20, fontSize: 14 }}>
-          Share this link to collaborate: {window.location.href}
-          <button
-            className="px-1 text-xs text-zinc-300 hover:text-white cursor-pointer"
-            onClick={() => navigator.clipboard.writeText(window.location.href)}
-            title="Copy room link"
-          >
-            <Clipboard className="w-4 h-4" />
-          </button>
-        </span>
-        {language}
-      </div>
-
+    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }} className="bg-brand">
+      <Header roomId={roomId} files={files} />
       <div style={{ display: "flex", height: "90vh" }}>
         {/* Sidebar */}
         <div
@@ -247,19 +211,20 @@ function Room() {
             flex: 0.5,
           }}
         >
-          <h3>Files</h3>
 
           {/* New File Button */}
           <button
             style={{
               width: "100%",
               padding: "8px",
-              backgroundColor: "#4CAF50",
+              backgroundColor: "#0899dd",
               color: "white",
               border: "none",
               borderRadius: "4px",
               marginBottom: "10px",
               cursor: "pointer",
+              display: "flex",
+              gap: "1rem"
             }}
             onClick={() => {
               const fileName = prompt("Enter new file name (e.g., newFile.js)");
@@ -272,8 +237,10 @@ function Room() {
               socketRef.current?.emit("create-file", { roomId, fileName });
             }}
           >
-            + New File
+           <FilePlus2 /> Add File
           </button>
+
+          <h3>Files</h3>
 
           {files.map((file) => (
             <div
@@ -299,7 +266,7 @@ function Room() {
                 }}
               >
                 <InsertDriveFileOutlinedIcon
-                  sx={{ marginRight: "5px", color: "#4CAF50" }}
+                  sx={{ marginRight: "5px", color: "#0899dd" }}
                 />
                 {file.fileName}
               </div>
@@ -307,7 +274,7 @@ function Room() {
                 <DeleteOutlineIcon
                   fontSize="small"
                   style={{
-                    color: "#4CAF50",
+                    color: "#0899dd",
                     cursor: "pointer",
                   }}
                   onClick={() => {
@@ -359,7 +326,7 @@ function Room() {
                 position: "relative",
                 top: "-50px",
                 left: "89%",
-                backgroundColor: "#4CAF50",
+                backgroundColor: "#0899dd",
                 width: "10%",
                 padding: "8px",
                 color: "white",
@@ -422,9 +389,10 @@ function Room() {
         >
           <div
             style={{
-              borderBottom: "0.5px solid #4A4A5C",
+              borderBottom: "0.5px solid #0899dd",
               padding: "15px",
               fontWeight: "bold",
+              color: "#0899dd"
             }}
           >
             Console
@@ -446,7 +414,7 @@ function Room() {
             output
               .split("\n")
               .map((op: string) => (
-                <div style={{ padding: "0 15px 0 15px" }}>{op}</div>
+                <div style={{ padding: "0 15px 0 15px", color: "#0899dd" }}>{op}</div>
               ))}
         </div>
       </div>

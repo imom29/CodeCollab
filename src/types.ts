@@ -5,3 +5,8 @@ type CodeObjectType = {
         currentLanguage: string;
     }
 }
+interface FileObject {
+    fileName: string;
+    code: string;
+    language: string;
+  }
