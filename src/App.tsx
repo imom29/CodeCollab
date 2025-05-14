@@ -1,5 +1,5 @@
-import { Routes, Route, useNavigate, useParams } from "react-router-dom";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Routes, Route, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import MonacoEditor from "@monaco-editor/react";
 import { CircularProgress, Tab } from "@mui/material";
@@ -16,22 +16,12 @@ import axios from "axios";
 import ChatbotPanel from "./Chatbot/ChatBot";
 import { FilePlus2 } from "lucide-react";
 import Header from "./components/Header"
+import HomePage from "./Home";
 
 // Page for creating or entering a room
 function Home() {
-  const navigate = useNavigate();
-  const createRoom = useCallback(() => {
-    const roomId = Math.random().toString(36).slice(2, 10); // random short id
-    navigate(`/room/${roomId}`);
-  }, [navigate]);
   return (
-    <div style={{ padding: 32 }}>
-      <h1>📝 Collaborative Code Editor</h1>
-      <button onClick={createRoom} style={{ fontSize: 18, padding: 12 }}>
-        Create Room
-      </button>
-      <p>Or share the room link to edit together in real-time.</p>
-    </div>
+    <HomePage />
   );
 }
 
