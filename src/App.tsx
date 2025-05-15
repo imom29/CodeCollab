@@ -17,6 +17,7 @@ import ChatbotPanel from "./Chatbot/ChatBot";
 import { FilePlus2 } from "lucide-react";
 import Header from "./components/Header"
 import HomePage from "./Home";
+import UserNamePrompt from "./components/UserNamePrompt";
 
 // Page for creating or entering a room
 function Home() {
@@ -187,6 +188,7 @@ function Room() {
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }} className="bg-brand">
+      <UserNamePrompt />
       <Header roomId={roomId} files={files} />
       <div style={{ display: "flex", height: "90vh" }}>
         {/* Sidebar */}

@@ -1,7 +1,8 @@
 import react from "react"
-import { Clipboard, Download } from "lucide-react";
+import { Clipboard, Download, User } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { getUsername } from "../utils/localStorage";
 
 type HeaderProps = {
     roomId?: string,
@@ -10,6 +11,8 @@ type HeaderProps = {
 
 const Header = (props: HeaderProps) => {
     const { roomId, files } = props
+
+    const userName = getUsername()
 
     const handleDownloadZip = async () => {
       const zip = new JSZip();
@@ -41,13 +44,18 @@ const Header = (props: HeaderProps) => {
           </button>
         </span>
 
+        <div className="flex gap-2 items-center">
+        <div title={userName ?? "Anonymous User"}>
+        <User />
+        </div>
         <button
           onClick={handleDownloadZip}
           className="bg-brand-blue hover:bg-dark-blue text-white px-2 py-1 rounded-md text-sm cursor-pointer"
           title="Download as ZIP"
-        >
+          >
           <Download />
         </button>
+          </div>
 
       </div>
     )
