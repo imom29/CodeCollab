@@ -26,7 +26,7 @@ function Home() {
   );
 }
 
-const SERVER_URL = "http://localhost:4000";
+const SERVER_URL = process.env.REACT_BACKEND_URL;
 
 function Room() {
   const { roomId } = useParams();

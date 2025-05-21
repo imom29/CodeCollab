@@ -85,17 +85,16 @@ export default function ChatbotPanel(activeFile: ChatBotProps) {
                 <ReactMarkdown
                   rehypePlugins={[rehypeSanitize]}
                   components={{
-                    code({ node, inline, className, children, ...props }) {
+                    code({ node, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || "");
                       const codeStr = String(children).replace(/\n$/, "");
-                      return !inline && match ? (
+                      return match ? (
                         <div className="relative">
                           <CopyButton code={codeStr} />
                           <SyntaxHighlighter
                             style={oneDark}
                             language={match[1]}
                             PreTag="div"
-                            {...props}
                           >
                             {codeStr}
                           </SyntaxHighlighter>
