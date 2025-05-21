@@ -117,6 +117,12 @@ app.post('/suggest', async (req, res, next) => {
 })
 
 
+app.get('/healthcheck', () => {
+  return res.status(200).json({
+    "status": "OK"
+  })
+})
+
 // const response = await generateResponse('hey whats up!')
 // console.log(response)
 
