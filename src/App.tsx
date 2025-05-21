@@ -26,7 +26,7 @@ function Home() {
   );
 }
 
-const SERVER_URL = process.env.REACT_BACKEND_URL;
+const SERVER_URL = import.meta.env.REACT_BACKEND_URL;
 
 function Room() {
   const { roomId } = useParams();
