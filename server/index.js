@@ -26,6 +26,12 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on("connection", (socket) => {
+  console.log(`✅ Client connected: ${socket.id}`);
+
+  socket.on('disconnect', () => {
+    console.log(`❌ Client disconnected: ${socket.id}`);
+  });
+
   // Join a room
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
@@ -116,15 +122,11 @@ app.post('/suggest', async (req, res, next) => {
   }
 })
 
-
-app.get('/healthcheck', () => {
+app.get('/healthcheck', (req, res) => {
   return res.status(200).json({
     "status": "OK"
   })
 })
-
-// const response = await generateResponse('hey whats up!')
-// console.log(response)
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {

@@ -26,7 +26,7 @@ function Home() {
   );
 }
 
-const SERVER_URL = import.meta.env.REACT_BACKEND_URL;
+const SERVER_URL = import.meta.env.VITE_BACKEND_URL;
 
 function Room() {
   const { roomId } = useParams();
@@ -53,6 +53,14 @@ function Room() {
       if (roomFiles.length > 0) {
         setActiveFile(roomFiles[0]);
       }
+    });
+
+    socket.on('connect', () => {
+      console.log(`✅ Connected to server: ${socket.id}`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log(`❌ Disconnected from server`);
     });
 
     // Receive remote code changes
