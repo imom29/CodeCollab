@@ -42,10 +42,16 @@ function Room() {
   useEffect(() => {
     if (!roomId) return;
     // Connect
-    const socket = io(SERVER_URL);
+    const socket = io(SERVER_URL, {
+      transports: ['websocket']
+    });
     socketRef.current = socket;
 
     socket.emit("join-room", roomId);
+
+    socket.on('connect_error', (err) => {
+      console.error('❌ Socket connection error:', err.message);
+    });
 
     // Receive initial files
     socket.on("init-files", (roomFiles: FileObject[]) => {
