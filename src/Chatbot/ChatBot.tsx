@@ -11,6 +11,8 @@ type ChatBotProps = {
     language: string
 }
 
+const SERVER_URL = import.meta.env.VITE_BACKEND_URL;
+
 export default function ChatbotPanel(activeFile: ChatBotProps) {
   const [chatInput, setChatInput] = useState("");
   const [messages, setMessages] = useState<{
@@ -28,7 +30,7 @@ export default function ChatbotPanel(activeFile: ChatBotProps) {
     setOpacity(0.4)
 
     try {
-      const res = await axios.post("http://localhost:4000/suggest", {
+      const res = await axios.post(`${SERVER_URL}/suggest`, {
         code: activeFile?.code || "",
         question: chatInput,
         language: activeFile?.language || "javascript",
