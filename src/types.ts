@@ -10,3 +10,8 @@ interface FileObject {
     code: string;
     language: string;
   }
+
+  interface User {
+    socketId: string;
+    name: string;
+  }

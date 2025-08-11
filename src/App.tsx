@@ -37,6 +37,7 @@ function Room() {
   const [language, setLanguage] = useState<string>("");
   const [output, setOutput] = useState<string | undefined>();
   const [codeExecuting, setCodeExecuting] = useState<boolean>(false); // Initiate socket, join room, and handle code syncing
+  const [participants, setParticipants] = useState<User[]>([]);
 
   // Initiate socket, join room, and handle code syncing
   useEffect(() => {
@@ -47,7 +48,9 @@ function Room() {
     });
     socketRef.current = socket;
 
-    socket.emit("join-room", roomId);
+    socket.emit("join-room", {
+      roomId, name: localStorage.getItem("username") || "Anonymous User"
+    });
 
     socket.on('connect_error', (err) => {
       console.error('❌ Socket connection error:', err.message);
@@ -67,6 +70,10 @@ function Room() {
 
     socket.on('disconnect', () => {
       console.log(`❌ Disconnected from server`);
+    });
+
+    socket.on("room-users", (users: User[]) => {
+      setParticipants(users);
     });
 
     // Receive remote code changes
@@ -203,7 +210,7 @@ function Room() {
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }} className="bg-brand">
       <UserNamePrompt />
-      <Header roomId={roomId} files={files} />
+      <Header roomId={roomId} files={files} participants={participants} />
       <div style={{ display: "flex", height: "90vh" }}>
         {/* Sidebar */}
         <div

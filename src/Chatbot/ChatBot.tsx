@@ -4,12 +4,14 @@ import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { Bot, User, Clipboard, OctagonPauseIcon } from "lucide-react"; // Icon imports
+import { Bot, User, Clipboard } from "lucide-react"; // Icon imports
 
 type ChatBotProps = {
     code: string,
     language: string
 }
+
+const SERVER_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function ChatbotPanel(activeFile: ChatBotProps) {
   const [chatInput, setChatInput] = useState("");
@@ -28,7 +30,7 @@ export default function ChatbotPanel(activeFile: ChatBotProps) {
     setOpacity(0.4)
 
     try {
-      const res = await axios.post("http://localhost:4000/suggest", {
+      const res = await axios.post(`${SERVER_URL}/suggest`, {
         code: activeFile?.code || "",
         question: chatInput,
         language: activeFile?.language || "javascript",

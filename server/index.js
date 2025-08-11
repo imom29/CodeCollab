@@ -18,6 +18,13 @@ const io = new Server(server, {
   },
 });
 
+// interface User{
+//   socketId: string;
+//   name: string;
+// }
+
+const usersInRoom = {};
+
 // In-memory map: roomId -> {
 // fileName: string,
 // code: string,
@@ -30,11 +37,23 @@ io.on("connection", (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`❌ Client disconnected: ${socket.id}`);
+
+    if (usersInRoom[roomId]) {
+      usersInRoom[roomId] = usersInRoom[roomId].filter(
+        (user) => user.socketId !== socket.id
+      );
+      io.to(roomId).emit("room-users", usersInRoom[roomId]);
+    }
   });
 
   // Join a room
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
+
+    if (!usersInRoom[roomId]) usersInRoom[roomId] = [];
+    usersInRoom[roomId].push({ socketId: socket.id, name });
+
+    io.to(roomId).emit("room-users", usersInRoom[roomId]);
 
     // Initialize room if needed
     if (!rooms[roomId]) {

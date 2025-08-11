@@ -3,14 +3,16 @@ import { Clipboard, Download, User } from "lucide-react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { getUsername } from "../utils/localStorage";
+import Participants from "./Participants";
 
 type HeaderProps = {
     roomId?: string,
-    files: FileObject[]
+    files: FileObject[],
+    participants: User[]
 }
 
 const Header = (props: HeaderProps) => {
-    const { roomId, files } = props
+    const { roomId, files, participants } = props
 
     const userName = getUsername()
 
@@ -43,6 +45,8 @@ const Header = (props: HeaderProps) => {
             <Clipboard className="w-4 h-4" />
           </button>
         </span>
+
+        <Participants participants={participants}/>
 
         <div className="flex gap-2 items-center">
         <div title={userName ?? "Anonymous User"}>
